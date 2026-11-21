@@ -2,6 +2,12 @@
 
 Group sections, projects, or machines under a collapsible folder in the BB sidebar. Keep frequently used groups outside the folder and use the filter bar to find active, waiting, or unread threads.
 
+## Screenshots
+
+| Expanded Projects folder | Folder settings |
+| --- | --- |
+| ![BB sidebar with the thread filters and three sections inside the expanded Projects folder](docs/screenshots/custom-sidebar.png) | ![Projects folder settings with its name, icon choices, and section checkboxes](docs/screenshots/folder-settings.png) |
+
 ## Install
 
 Requires **BB 0.50.1** or later, **Plugin SDK 0.6.157** or later, and BB's built-in thread list.
