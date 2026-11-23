@@ -1,6 +1,8 @@
 import { defineRpcContract, type BbPluginApi } from "@get-bb/plugin-sdk";
 import { z } from "zod";
 import { folderIcons } from "./folder-icons";
+import { threadIconContract, threadIconsTag } from "./thread-icon-contract";
+import type { ThreadIcon } from "./thread-icon-options";
 
 const sectionId = z.string().regex(/^sec_[a-zA-Z0-9_-]+$/);
 const projectId = z.string().regex(/^proj_[a-zA-Z0-9_-]+$/);
@@ -57,6 +59,7 @@ export const rpcContract = defineRpcContract({
     input: z.object({ kind: folderKind, icon: folderIcon.nullable() }).strict(),
     output: folderSchema,
   },
+  ...threadIconContract,
   setMembership: {
     input: z.object({ sectionId: itemId, inFolder: z.boolean(), placement: placementSchema.optional() }).strict(),
     output: folderSchema,
@@ -70,6 +73,23 @@ function kindOf(id: string): FolderKind {
 }
 
 export default function projectSectionFolder(bb: BbPluginApi) {
+  const db = bb.storage.database();
+  bb.storage.migrate(db, [
+    "CREATE TABLE thread_icons (thread_id TEXT PRIMARY KEY, icon TEXT NOT NULL)",
+  ]);
+  const readThreadIcons = db.prepare<[], { thread_id: string; icon: ThreadIcon }>(
+    "SELECT thread_id, icon FROM thread_icons",
+  );
+  const saveThreadIcon = db.prepare<[string, ThreadIcon]>(`
+    INSERT INTO thread_icons (thread_id, icon) VALUES (?, ?)
+    ON CONFLICT (thread_id) DO UPDATE SET icon = excluded.icon
+  `);
+  const deleteThreadIcon = db.prepare<[string]>("DELETE FROM thread_icons WHERE thread_id = ?");
+
+  bb.events.on("thread.deleted", ({ thread }) => {
+    if (deleteThreadIcon.run(thread.id).changes) bb.rpc.experimental_invalidate([threadIconsTag]);
+  });
+
   async function getFolder(): Promise<ProjectFolder> {
     const value = await bb.storage.kv.get(folderKey);
     const parsed = folderSchema.safeParse(value);
@@ -166,6 +186,17 @@ export default function projectSectionFolder(bb: BbPluginApi) {
 
   bb.rpc.register(rpcContract, {
     getFolder,
+    getThreadIcons: () => Object.fromEntries(readThreadIcons.all().map(({ thread_id, icon }) => [thread_id, icon])),
+    setThreadIcon: async ({ threadId, icon }) => {
+      if (icon === null) deleteThreadIcon.run(threadId);
+      else {
+        const thread = await bb.sdk.threads.get({ threadId });
+        if (thread.deletedAt !== null) throw new Error("This thread is no longer available.");
+        saveThreadIcon.run(threadId, icon);
+      }
+      bb.rpc.experimental_invalidate([threadIconsTag]);
+      return null;
+    },
     configureFolder: (folder) => change(async () => saveFolder({ ...await getFolder(), ...folder })),
     setFolderName: ({ kind, name }) => change(async () => {
       const current = await getFolder();

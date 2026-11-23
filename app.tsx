@@ -13,6 +13,7 @@ import type { FolderKind, ProjectFolder, SectionPlacement, rpcContract } from ".
 import { folderIcons, type FolderIcon } from "./folder-icons";
 import { manageFolderLayout } from "./layout";
 import { NO_MACHINE, ThreadFilters, threadGroupKey, type ThreadFilter } from "./thread-filters";
+import { changeIconAction, SidebarThreadIcons, useThreadIcons } from "./thread-icons";
 import "./app.css";
 
 const collapseKey = "project-section-folder:collapsed";
@@ -105,6 +106,7 @@ function FolderIconPicker({ icon, onSave }: {
 
 function ProjectSectionFolder() {
   const rpc = useRpc<typeof rpcContract>();
+  const threadIcons = useThreadIcons();
   const connection = useRealtimeConnectionState();
   const { projects, sections, threads, experimental_hosts: hosts } = experimental_useSidebarThreads();
   const { threadId } = useBbContext();
@@ -215,7 +217,7 @@ function ProjectSectionFolder() {
     layout.current?.update({ memberships, top, collapsed, filtering: filter !== "all" });
   }, [configured, memberships, top, collapsed, filter]);
 
-  if (!folder) return null;
+  if (!folder) return <SidebarThreadIcons icons={threadIcons} />;
 
   const editable = kind === "machine" ? machines
     : kind === "project" ? projects.filter(({ isPersonal }) => !isPersonal)
@@ -232,11 +234,13 @@ function ProjectSectionFolder() {
   });
 
   return <>
+    <SidebarThreadIcons icons={threadIcons} />
     {createPortal(
       <ThreadFilters
         filter={filter}
         onFilterChange={setFilter}
         threads={threads}
+        threadIcons={threadIcons}
         sections={sections}
         projects={projects}
         machines={machines}
@@ -313,6 +317,7 @@ function ProjectSectionFolder() {
 }
 
 export default definePluginApp((app) => {
+  app.slots.experimental_threadAction(changeIconAction);
   app.slots.experimental_appOverlay({
     id: "project-section-folder",
     component: ProjectSectionFolder,

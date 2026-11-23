@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { createPortal } from "react-dom";
 import {
+  experimental_Icon as Icon,
   experimental_ThreadActionsContextMenu as ThreadMenu,
   experimental_ThreadStatusGlyph as StatusGlyph,
   experimental_resolveThreadStatus as resolveThreadStatus,
@@ -11,6 +12,7 @@ import {
   type PluginSidebarThread,
 } from "@get-bb/plugin-sdk/app";
 import type { FolderKind } from "./server";
+import { threadIconGlyph, type ThreadIcons } from "./thread-icon-options";
 
 export type ThreadFilter = "all" | "active" | "waiting" | "unread";
 const options: readonly { value: ThreadFilter; title: string; hint?: string }[] = [
@@ -38,6 +40,7 @@ type Props = {
   filter: ThreadFilter;
   onFilterChange: (filter: ThreadFilter) => void;
   threads: readonly PluginSidebarThread[];
+  threadIcons: ThreadIcons;
   sections: readonly PluginSidebarSection[];
   projects: readonly PluginSidebarProject[];
   machines: readonly NamedItem[];
@@ -45,7 +48,7 @@ type Props = {
   resultsHost: HTMLElement;
 };
 
-export function ThreadFilters({ filter, onFilterChange, threads, sections, projects, machines, kind, resultsHost }: Props) {
+export function ThreadFilters({ filter, onFilterChange, threads, threadIcons, sections, projects, machines, kind, resultsHost }: Props) {
   const navigate = useBbNavigate();
   const { threadId } = useBbContext();
   const matches = useMemo(() => {
@@ -107,33 +110,37 @@ export function ThreadFilters({ filter, onFilterChange, threads, sections, proje
           {[...groups].map(([sectionId, items]) => (
             <section key={sectionId ?? "threads"} data-filter-section={sectionId ?? "threads"}>
               <h3>{names.get(sectionId ?? "") ?? (kind === "machine" ? "Unknown machine" : "Threads")}</h3>
-              {items.map((thread) => (
-                <ThreadMenu
-                  key={thread.id}
-                  thread={{
-                    ...thread,
-                    environment: thread.environment?.id
-                      ? { id: thread.environment.id, path: thread.environment.path }
-                      : null,
-                  }}
-                >
-                  <a
-                    href={thread.href}
-                    data-sidebar-thread-id={thread.id}
-                    data-sidebar-thread-shortcut-target=""
-                    aria-current={threadId === thread.id ? "page" : undefined}
-                    title={thread.displayTitle}
-                    onClick={(event) => {
-                      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-                      event.preventDefault();
-                      navigate.toThread(thread.id);
+              {items.map((thread) => {
+                const icon = threadIcons[thread.id];
+                return (
+                  <ThreadMenu
+                    key={thread.id}
+                    thread={{
+                      ...thread,
+                      environment: thread.environment?.id
+                        ? { id: thread.environment.id, path: thread.environment.path }
+                        : null,
                     }}
                   >
-                    <span className="project-section-filters__title">{thread.displayTitle}</span>
-                    <StatusGlyph indicator={thread.indicator} size="compact" />
-                  </a>
-                </ThreadMenu>
-              ))}
+                    <a
+                      href={thread.href}
+                      data-sidebar-thread-id={thread.id}
+                      data-sidebar-thread-shortcut-target=""
+                      aria-current={threadId === thread.id ? "page" : undefined}
+                      title={thread.displayTitle}
+                      onClick={(event) => {
+                        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                        event.preventDefault();
+                        navigate.toThread(thread.id);
+                      }}
+                    >
+                      {icon && <span data-project-section-thread-icon="" aria-hidden="true"><Icon name={threadIconGlyph(icon)} /></span>}
+                      <span className="project-section-filters__title">{thread.displayTitle}</span>
+                      <StatusGlyph indicator={thread.indicator} size="compact" />
+                    </a>
+                  </ThreadMenu>
+                );
+              })}
             </section>
           ))}
         </div>,

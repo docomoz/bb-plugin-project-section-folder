@@ -438,3 +438,27 @@
     min-height: 34px;
   }
 }
+[data-project-section-thread-icon] {
+  display: inline-flex;
+  flex: 0 0 1rem;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  margin-inline-end: .5rem;
+  color: var(--muted-foreground);
+  pointer-events: none;
+}
+
+[data-project-section-thread-icon] > svg {
+  width: .875rem;
+  height: .875rem;
+}
+
+[data-project-section-thread-icon] + [data-sidebar-thread-provider] {
+  display: none;
+}
+
+.project-section-filters__results [data-project-section-thread-icon] {
+  margin-inline-end: 0;
+}
