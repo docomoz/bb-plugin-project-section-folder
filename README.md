@@ -15,7 +15,7 @@ Requires **BB 0.50.1** or later, **Plugin SDK 0.6.157** or later, and BB's built
 In BB, open **Settings → Plugins → Install from source** and paste:
 
 ```text
-git:https://github.com/docomoz/bb-plugin-project-section-folder.git@v0.2.0
+git:https://github.com/docomoz/bb-plugin-project-section-folder.git@v0.2.1
 ```
 
 You can also pass the same source to `bb plugin install`.
@@ -27,6 +27,7 @@ You can also pass the same source to `bb plugin install`.
 - Use **Folder name** and **Folder icon** in the same menu. Clear the name and save to restore its default. Choose **No icon** to remove the icon.
 - Open **⋯ → Change icon** on a thread to choose from 32 sidebar icons, including **Automations**. Choose **Provider default** to restore the provider icon. BB saves the choice per thread across windows.
 - **Active** shows threads where an agent is working. **Input** shows threads waiting for a reply or confirmation. **Unread** includes unread threads in collapsed groups. **All** returns to the regular sidebar.
+- Filtered rows use the same icon sizing, spacing, and thread menu as **All**. Both provider icons and custom icons appear in the filters.
 
 The folder starts empty. It appears in modes with groups you can put inside it. Folder settings are stored on your BB server. The plugin uses BB's thread and sidebar APIs and requires no external service.
 

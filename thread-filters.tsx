@@ -1,18 +1,18 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 import {
-  experimental_Icon as Icon,
-  experimental_ThreadActionsContextMenu as ThreadMenu,
-  experimental_ThreadStatusGlyph as StatusGlyph,
   experimental_resolveThreadStatus as resolveThreadStatus,
+  experimental_useProviders,
+  experimental_useRpcQuery,
   useBbContext,
-  useBbNavigate,
   type PluginSidebarProject,
   type PluginSidebarSection,
   type PluginSidebarThread,
 } from "@get-bb/plugin-sdk/app";
+import { z } from "zod";
+import { FilteredThreadRow } from "./filtered-thread-row";
 import type { FolderKind } from "./server";
-import { threadIconGlyph, type ThreadIcons } from "./thread-icon-options";
+import type { ThreadIcons } from "./thread-icon-options";
 
 export type ThreadFilter = "all" | "active" | "waiting" | "unread";
 const options: readonly { value: ThreadFilter; title: string; hint?: string }[] = [
@@ -26,6 +26,15 @@ const emptyState: Record<Exclude<ThreadFilter, "all">, string> = {
   waiting: "No threads need input",
   unread: "No unread threads",
 };
+const rowPreferences = z.object({
+  showProviderIcons: z.boolean(),
+  showRowMetadata: z.boolean(),
+  rowActions: z.array(z.string()),
+});
+const threadListContract = {
+  listPreferences: { input: z.null(), output: z.object({ preferences: rowPreferences }) },
+};
+const defaultRowPreferences = { showProviderIcons: true, showRowMetadata: false, rowActions: ["bb--core/archive"] };
 
 export const NO_MACHINE = "no-machine";
 type NamedItem = { id: string; name: string };
@@ -49,8 +58,20 @@ type Props = {
 };
 
 export function ThreadFilters({ filter, onFilterChange, threads, threadIcons, sections, projects, machines, kind, resultsHost }: Props) {
-  const navigate = useBbNavigate();
   const { threadId } = useBbContext();
+  const { providers } = experimental_useProviders();
+  const { data, refetch } = experimental_useRpcQuery({
+    contract: threadListContract,
+    pluginId: "thread-list",
+    method: "listPreferences",
+    input: null,
+    enabled: filter !== "all",
+  });
+  useEffect(() => {
+    if (filter !== "all") void refetch();
+  }, [filter, refetch]);
+  const preferences = data?.preferences ?? defaultRowPreferences;
+  const providersById = useMemo(() => new Map(providers.map((provider) => [provider.id, provider])), [providers]);
   const matches = useMemo(() => {
     const visible = threads.filter((thread) => !thread.isHidden && !thread.isArchived);
     return {
@@ -110,37 +131,17 @@ export function ThreadFilters({ filter, onFilterChange, threads, threadIcons, se
           {[...groups].map(([sectionId, items]) => (
             <section key={sectionId ?? "threads"} data-filter-section={sectionId ?? "threads"}>
               <h3>{names.get(sectionId ?? "") ?? (kind === "machine" ? "Unknown machine" : "Threads")}</h3>
-              {items.map((thread) => {
-                const icon = threadIcons[thread.id];
-                return (
-                  <ThreadMenu
-                    key={thread.id}
-                    thread={{
-                      ...thread,
-                      environment: thread.environment?.id
-                        ? { id: thread.environment.id, path: thread.environment.path }
-                        : null,
-                    }}
-                  >
-                    <a
-                      href={thread.href}
-                      data-sidebar-thread-id={thread.id}
-                      data-sidebar-thread-shortcut-target=""
-                      aria-current={threadId === thread.id ? "page" : undefined}
-                      title={thread.displayTitle}
-                      onClick={(event) => {
-                        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-                        event.preventDefault();
-                        navigate.toThread(thread.id);
-                      }}
-                    >
-                      {icon && <span data-project-section-thread-icon="" aria-hidden="true"><Icon name={threadIconGlyph(icon)} /></span>}
-                      <span className="project-section-filters__title">{thread.displayTitle}</span>
-                      <StatusGlyph indicator={thread.indicator} size="compact" />
-                    </a>
-                  </ThreadMenu>
-                );
-              })}
+              {items.map((thread) => (
+                <FilteredThreadRow
+                  key={thread.id}
+                  thread={thread}
+                  selected={threadId === thread.id}
+                  icon={threadIcons[thread.id]}
+                  provider={preferences.showProviderIcons ? providersById.get(thread.providerId) : undefined}
+                  showMetadata={preferences.showRowMetadata}
+                  rowActions={preferences.rowActions}
+                />
+              ))}
             </section>
           ))}
         </div>,
