@@ -398,12 +398,12 @@
 }
 
 .project-section-filters__results {
-  padding-block: 4px 8px;
+  padding-block: 8px;
   padding-inline-start: 8px;
 }
 
 .project-section-filters__results section + section {
-  margin-block-start: 12px;
+  margin-block-start: 1rem;
 }
 
 .project-section-filters__results h3,
@@ -439,6 +439,14 @@
   color: var(--sidebar-foreground);
   font-size: var(--text-sm, 13px);
   line-height: var(--text-sm--line-height, 1.42857);
+}
+
+.project-section-filters__row + .project-section-filters__row {
+  margin-block-start: .125rem;
+}
+
+[data-filter-section^="sec_"] > .project-section-filters__row + .project-section-filters__row {
+  margin-block-start: 1px;
 }
 
 .project-section-filters__row:not([data-selected]):is(:hover, :has(:focus-visible), [data-menu-open]) {
@@ -566,6 +574,10 @@
 }
 
 @media (max-width: 767px) and (pointer: coarse) {
+  .project-section-filters__results section + section {
+    margin-block-start: 2rem;
+  }
+
   .project-section-filters__row {
     --project-section-row-action-size: 2.25rem;
     min-height: var(--bb-sidebar-row-height-coarse, 2.5rem);
