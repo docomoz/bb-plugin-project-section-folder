@@ -1,4 +1,4 @@
-# Sidebar Folders
+# Sidebar Beautifier
 
 Organize sections, projects, or machines in a collapsible folder in the BB sidebar. Keep long sections short with **Load more** and find active, waiting, or unread threads with filters. Give each thread one of 71 icons and choose from nine colors or the default gray.
 
@@ -15,7 +15,7 @@ Requires **BB 0.50.1** or later, **Plugin SDK 0.6.157** or later, and BB's built
 In BB, open **Settings → Plugins → Install from source** and paste:
 
 ```text
-git:https://github.com/docomoz/bb-plugin-project-section-folder.git@v0.2.5
+git:https://github.com/docomoz/bb-plugin-project-section-folder.git@v0.2.6
 ```
 
 You can also pass the same source to `bb plugin install`.
@@ -33,9 +33,9 @@ The folder starts empty. It appears in modes with groups you can put inside it. 
 
 ## Limit long sections
 
-Turn on **Enable Load more** under **Settings → Plugins → Sidebar Folders**. By default, each custom section and **Threads** shows five top-level threads. **Pinned** has a separate limit of eight that you can turn off. **Load more** reveals five at a time, and **Show less** restores the starting limit. The open thread stays visible, child threads stay with their parent, and each window remembers which sections are expanded until reload.
+Turn on **Enable Load more** under **Settings → Plugins → Sidebar Beautifier**. By default, each custom section and **Threads** shows five top-level threads. **Pinned** has a separate limit of eight that you can turn off. **Load more** reveals five at a time, and **Show less** restores the starting limit. The open thread stays visible, child threads stay with their parent, and each window remembers which sections are expanded until reload.
 
-Adjust the initial limits and reveal step in the same settings. If you have the standalone **Section Load More** plugin, copy its limits to Sidebar Folders and disable the standalone plugin before enabling **Load more** here.
+Adjust the initial limits and reveal step in the same settings. If you have the standalone **Section Load More** plugin, copy its limits to Sidebar Beautifier and disable the standalone plugin before enabling **Load more** here.
 
 ![Load more at the end of Pinned, Threads, and a custom section inside Projects](docs/screenshots/load-more.jpg)
 

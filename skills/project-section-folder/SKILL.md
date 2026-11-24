@@ -13,6 +13,6 @@ Open Folder icon in the same menu to choose an icon for the current mode. The ch
 
 Open **Change icon** in a thread's **⋯** or right-click menu to choose a sidebar icon and color. Icons that are no longer in the grid stay valid for threads that already use them. Choose **Provider default** and save to clear the override.
 
-Enable **Load more** in Sidebar Folders settings or with `bb plugin config project-section-folder set enableLoadMore true`. The settings `visibleThreads`, `loadMoreStep`, `limitPinnedThreads`, and `visiblePinnedThreads` control the starting limits and reveal step. The active thread stays visible. The feature applies to Threads, custom sections, and optionally Pinned on All.
+Enable **Load more** in Sidebar Beautifier settings or with `bb plugin config project-section-folder set enableLoadMore true`. The settings `visibleThreads`, `loadMoreStep`, `limitPinnedThreads`, and `visiblePinnedThreads` control the starting limits and reveal step. The active thread stays visible. The feature applies to Threads, custom sections, and optionally Pinned on All.
 
 `bb plugin rpc call project-section-folder getFolder --json` reads the configuration. `configureFolder` accepts `{"top":["sec_..."],"members":["sec_..."]}`. Resolve sections with `bb thread section list --json` before writing. These changes affect layout and the chronological section order.
