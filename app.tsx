@@ -260,7 +260,7 @@ function ProjectSectionFolder() {
         }
       }}>
         <div data-project-section-drop-zone="" aria-hidden="true">Move above folder</div>
-        <div className="project-section-folder__header">
+        <div className="project-section-folder__header bb-sidebar-hover-actions-row">
           <button
             className="project-section-folder__toggle"
             type="button"
@@ -274,7 +274,9 @@ function ProjectSectionFolder() {
           </button>
           <button
             ref={settingsButton}
-            className="project-section-folder__settings"
+            className="project-section-folder__settings bb-sidebar-hover-actions"
+            data-sidebar-hover-actions-mobile="always"
+            data-sidebar-hover-actions-open={showMembership ? "true" : undefined}
             type="button"
             aria-label={`${folderLabel} folder settings`}
             title={`${folderLabel} folder settings`}
