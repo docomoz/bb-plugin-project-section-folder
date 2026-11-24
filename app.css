@@ -356,6 +356,10 @@
   color: var(--sidebar-primary);
 }
 
+[data-sidebar="content"] [data-bb-plugin="thread-list"] span.truncate:has(+ button[data-sidebar-rename-anchor][aria-expanded]:enabled) {
+  cursor: pointer;
+}
+
 .project-section-filters__controls {
   display: flex;
   align-items: center;
@@ -423,8 +427,34 @@
   top: 0;
   z-index: 1;
   margin-block-end: 4px;
+  padding-inline-start: 0;
   border-radius: var(--radius-md);
   background: var(--sidebar);
+}
+
+.project-section-filters__results h3 button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  min-height: inherit;
+  padding-inline: 8px;
+  border-radius: inherit;
+  text-align: start;
+}
+
+.project-section-filters__results h3 button:focus-visible {
+  outline: 2px solid var(--sidebar-ring);
+  outline-offset: -2px;
+}
+
+.project-section-filters__results h3 button svg {
+  width: .75rem;
+  height: .75rem;
+}
+
+.project-section-filters__results h3 button[aria-expanded="true"] svg {
+  rotate: 90deg;
 }
 
 .project-section-filters__row {

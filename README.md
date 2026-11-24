@@ -15,7 +15,7 @@ Requires **BB 0.50.1** or later, **Plugin SDK 0.6.157** or later, and BB's built
 In BB, open **Settings → Plugins → Install from source** and paste:
 
 ```text
-git:https://github.com/docomoz/bb-plugin-project-section-folder.git@v0.2.7
+git:https://github.com/docomoz/bb-plugin-project-section-folder.git@v0.2.8
 ```
 
 You can also pass the same source to `bb plugin install`.
@@ -23,6 +23,7 @@ You can also pass the same source to `bb plugin install`.
 ## Organize the sidebar
 
 - **Custom** groups your BB sections. **Projects** groups projects and **Machines** groups machines. Each mode has its own folder settings.
+- Click a section's name to expand or collapse it. To edit the name, choose **Rename** in the section menu.
 - Drag a group by its heading onto the folder, or open **⋯** beside the folder and check the groups you want inside. To take a group out, uncheck it or drop it on **Move above folder**.
 - Use **Folder name** and **Folder icon** in the same menu. Clear the name and save to restore its default. Choose **No icon** to remove the icon.
 - Open **⋯ → Change icon** on a thread to choose from a grid of 72 icons and 9 optional colors besides the default gray. The grid covers strategy, meetings, digests, analytics, maps, AI, health, workouts, expenses, family, and more. The grid has six full rows on desktop and nine on phones. Choose **Provider default** and save to restore the provider icon. BB saves each thread’s icon and color across windows.

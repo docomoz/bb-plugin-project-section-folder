@@ -1,6 +1,7 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import {
+  experimental_Icon as Icon,
   experimental_resolveThreadStatus as resolveThreadStatus,
   experimental_useProviders,
   experimental_useRpcQuery,
@@ -58,6 +59,7 @@ type Props = {
 };
 
 export function ThreadFilters({ filter, onFilterChange, threads, threadIcons, sections, projects, machines, kind, resultsHost }: Props) {
+  const [collapsedGroups, setCollapsedGroups] = useState<ReadonlySet<string>>(() => new Set());
   const { threadId } = useBbContext();
   const { providers } = experimental_useProviders();
   const { data, refetch } = experimental_useRpcQuery({
@@ -106,6 +108,14 @@ export function ThreadFilters({ filter, onFilterChange, threads, threadIcons, se
     return new Map(items.map(({ id, name }) => [id, name]));
   }, [kind, machines, projects, sections]);
 
+  function toggleGroup(key: string) {
+    setCollapsedGroups((current) => {
+      const next = new Set(current);
+      if (!next.delete(key)) next.add(key);
+      return next;
+    });
+  }
+
   return (
     <div className="project-section-filters">
       <div className="project-section-filters__controls" role="group" aria-label="Thread filters">
@@ -128,22 +138,32 @@ export function ThreadFilters({ filter, onFilterChange, threads, threadIcons, se
           {groups.size === 0 && (
             <p role="status">{emptyState[filter]}</p>
           )}
-          {[...groups].map(([sectionId, items]) => (
-            <section key={sectionId ?? "threads"} data-filter-section={sectionId ?? "threads"}>
-              <h3>{names.get(sectionId ?? "") ?? (kind === "machine" ? "Unknown machine" : "Threads")}</h3>
-              {items.map((thread) => (
-                <FilteredThreadRow
-                  key={thread.id}
-                  thread={thread}
-                  selected={threadId === thread.id}
-                  icon={threadIcons[thread.id]}
-                  provider={preferences.showProviderIcons ? providersById.get(thread.providerId) : undefined}
-                  showMetadata={preferences.showRowMetadata}
-                  rowActions={preferences.rowActions}
-                />
-              ))}
-            </section>
-          ))}
+          {[...groups].map(([sectionId, items]) => {
+            const group = sectionId ?? "threads";
+            const key = `${filter}:${kind ?? "section"}:${group}`;
+            const collapsed = collapsedGroups.has(key);
+            return (
+              <section key={group} data-filter-section={group}>
+                <h3>
+                  <button type="button" aria-expanded={!collapsed} onClick={() => toggleGroup(key)}>
+                    {names.get(sectionId ?? "") ?? (kind === "machine" ? "Unknown machine" : "Threads")}
+                    <Icon name="ChevronRight" aria-hidden />
+                  </button>
+                </h3>
+                {!collapsed && items.map((thread) => (
+                  <FilteredThreadRow
+                    key={thread.id}
+                    thread={thread}
+                    selected={threadId === thread.id}
+                    icon={threadIcons[thread.id]}
+                    provider={preferences.showProviderIcons ? providersById.get(thread.providerId) : undefined}
+                    showMetadata={preferences.showRowMetadata}
+                    rowActions={preferences.rowActions}
+                  />
+                ))}
+              </section>
+            );
+          })}
         </div>,
         resultsHost,
       )}

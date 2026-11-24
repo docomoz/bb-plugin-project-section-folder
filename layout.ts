@@ -1,6 +1,7 @@
 import { manageSectionDrag, type SectionMove } from "./section-drag";
 import type { FolderKind } from "./server";
 
+const listSelector = '[data-sidebar="content"] [data-bb-plugin="thread-list"]';
 const groupSelector = [
   '[data-sidebar-visibility-group^="section:"]',
   '[data-sidebar-visibility-group^="project:"]',
@@ -12,6 +13,20 @@ const folderMarker = "data-project-section-folder";
 const memberMarker = "data-project-section-folder-member";
 const hiddenMarker = "data-project-section-folder-hidden";
 
+function toggleSectionHeading(event: MouseEvent) {
+  if (event.defaultPrevented || event.button !== 0 || !(event.target instanceof Element)) return;
+  const title = event.target.closest("span.truncate");
+  if (!title?.closest(listSelector)) return;
+  // The native section, project, machine and environment headings share this button.
+  const toggle = title.nextElementSibling;
+  if (!(toggle instanceof HTMLButtonElement) || toggle.disabled ||
+    !toggle.matches("button[data-sidebar-rename-anchor][aria-expanded]")) return;
+
+  event.preventDefault();
+  event.stopPropagation();
+  if (event.type === "click" && event.detail <= 1) toggle.click();
+}
+
 export function manageFolderLayout(
   host: HTMLElement,
   filterHost: HTMLElement,
@@ -21,6 +36,9 @@ export function manageFolderLayout(
 ) {
   const marked = new Set<HTMLElement>();
   const drag = manageSectionDrag(host, onMove);
+  const headingClicks = new AbortController();
+  window.addEventListener("click", toggleSectionHeading, { capture: true, signal: headingClicks.signal });
+  window.addEventListener("dblclick", toggleSectionHeading, { capture: true, signal: headingClicks.signal });
   let sectionList: HTMLElement | null = null;
   let newThreadButton: HTMLElement | null = null;
   let memberships: Memberships = { section: new Set(), project: new Set(), machine: new Set() };
@@ -60,9 +78,7 @@ export function manageFolderLayout(
   }
 
   function sync() {
-    const list = document.querySelector<HTMLElement>(
-      '[data-sidebar="content"] [data-bb-plugin="thread-list"]',
-    );
+    const list = document.querySelector<HTMLElement>(listSelector);
     const scroller = list?.closest<HTMLElement>('[data-sidebar="content"]') ?? null;
     syncFilter(list, scroller);
     const firstGroup = list?.querySelector<HTMLElement>(groupSelector);
@@ -168,6 +184,7 @@ export function manageFolderLayout(
     dispose() {
       observer.disconnect();
       drag.dispose();
+      headingClicks.abort();
       syncFilter(null, null);
       cancelAnimationFrame(frame);
       host.remove();
