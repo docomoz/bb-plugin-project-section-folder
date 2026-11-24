@@ -1,5 +1,6 @@
 export const lucideThreadIcons = {
   HeartPulse: "Health",
+  Banknote: "Money",
   Wallet: "Expenses",
   Dumbbell: "Workout",
   Apple: "Nutrition",
@@ -113,7 +114,7 @@ export const threadIconPickerOptions: readonly ThreadIcon[] = [
   "NotebookPen", "File", "FileCheck", "Mic", "GraduationCap", "BookOpen", "Palette", "Link", "Lock", "Sparkles", "Workflow", "Puzzle",
   "Code", "GitBranch", "Bug", "Rocket", "Server", "Settings", "MapPin", "Route", "Layers3", "Fuel", "SquareParking", "CarFront",
   "Plane", "BedDouble", "House", "Wrench", "ShoppingBasket", "ShoppingBag", "Gift", "HandHeart", "Film", "Ticket", "Music", "Smartphone",
-  "Salad", "Dumbbell", "HeartPulse", "Moon", "Pill", "Stethoscope", "Footprints", "Weight", "GlassWater", "Wallet", "PiggyBank", "Landmark",
+  "Salad", "Dumbbell", "HeartPulse", "Moon", "Pill", "Stethoscope", "Footprints", "Weight", "GlassWater", "Banknote", "Wallet", "PiggyBank",
 ];
 
 export const threadIconColors = {

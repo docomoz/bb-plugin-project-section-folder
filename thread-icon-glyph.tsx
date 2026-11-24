@@ -1,6 +1,6 @@
 import { experimental_Icon as Icon } from "@get-bb/plugin-sdk/app";
 import {
-  Apple, BadgePercent, BedDouble, Bike, BookOpen, Briefcase, Calculator, Camera, CarFront, Cat,
+  Apple, BadgePercent, Banknote, BedDouble, Bike, BookOpen, Briefcase, Calculator, Camera, CarFront, Cat,
   CreditCard, Database, Dumbbell, FileCheck, Film, Flame, Footprints, Fuel, Funnel, Gamepad2, Gauge,
   Gift, GlassWater, GraduationCap, HandHeart, Handshake, Headphones, HeartPulse, House, Landmark,
   Layers3, Leaf, Lightbulb, Megaphone, Moon, Music, NotebookPen, PiggyBank, Pill, Plane,
@@ -11,7 +11,7 @@ import {
 import { threadIconColors, threadIconGlyph, type lucideThreadIcons, type ThreadIcon, type ThreadIconColor } from "./thread-icon-options";
 
 const lucideGlyphs: Record<keyof typeof lucideThreadIcons, LucideIcon> = {
-  Apple, BadgePercent, BedDouble, Bike, BookOpen, Briefcase, Calculator, Camera, CarFront, Cat,
+  Apple, BadgePercent, Banknote, BedDouble, Bike, BookOpen, Briefcase, Calculator, Camera, CarFront, Cat,
   CreditCard, Database, Dumbbell, FileCheck, Film, Flame, Footprints, Fuel, Funnel, Gamepad2, Gauge,
   Gift, GlassWater, GraduationCap, HandHeart, Handshake, Headphones, HeartPulse, House, Landmark,
   Layers3, Leaf, Lightbulb, Megaphone, Moon, Music, NotebookPen, PiggyBank, Pill, Plane,
