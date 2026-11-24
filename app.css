@@ -7,6 +7,21 @@
   order: var(--project-folder-order, 0);
 }
 
+/* Use the native group spacing in visual order when the folder reorders groups. */
+[data-project-section-folder].space-y-4 {
+  row-gap: calc(4 * var(--spacing, .25rem));
+}
+
+[data-project-section-folder].space-y-4 > * {
+  margin-block: 0;
+}
+
+@media (max-width: 767px) and (pointer: coarse) {
+  [data-project-section-folder].space-y-4 {
+    row-gap: calc(8 * var(--spacing, .25rem));
+  }
+}
+
 [data-project-section-folder-member] {
   padding-inline-start: 12px;
 }
@@ -22,8 +37,8 @@
   min-height: 24px;
   color: var(--muted-foreground);
   font-size: 12px;
-  font-weight: 500;
-  line-height: 16px;
+  font-weight: 400;
+  line-height: 20px;
 }
 
 .project-section-folder button {
@@ -35,7 +50,7 @@
   cursor: pointer;
 }
 
-.project-section-folder button:hover {
+.project-section-folder button:not(.project-section-folder__toggle):hover {
   background: var(--sidebar-accent);
   color: var(--sidebar-accent-foreground);
 }
@@ -67,6 +82,10 @@
   width: 14px;
   height: 14px;
   margin-inline-end: 2px;
+}
+
+.project-section-folder__chevron {
+  margin-inline: 6px;
 }
 
 .project-section-folder__toggle[aria-expanded="true"] .project-section-folder__chevron {
@@ -271,6 +290,7 @@
 
 .project-section-folder {
   position: relative;
+  padding-block-end: 4px;
 }
 
 .project-section-folder__error {
