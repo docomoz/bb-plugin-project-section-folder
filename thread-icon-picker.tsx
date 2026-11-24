@@ -61,10 +61,6 @@ function IconPickerForm({ threadId, initial, onSave }: { threadId: string; initi
   });
   const saved = initial ?? providerDefault;
   const changed = draft.icon !== saved.icon || (draft.icon !== null && draft.color !== saved.color);
-  const iconIds = initial && !threadIconPickerOptions.includes(initial.icon)
-    ? [initial.icon, ...threadIconPickerOptions]
-    : threadIconPickerOptions;
-
   return (
     <form className="project-section-icon-picker__form" onSubmit={(event) => {
       event.preventDefault();
@@ -74,7 +70,7 @@ function IconPickerForm({ threadId, initial, onSave }: { threadId: string; initi
       {/* The thread is clear from where the picker was opened; screen readers still hear its title. */}
       <Dialog.Description className="project-section-icon-picker__sr-only"><ThreadTitle threadId={threadId} /></Dialog.Description>
       <fieldset className="project-section-icon-picker__grid" aria-label="Icon" disabled={isPending}>
-        {iconIds.map((icon) => (
+        {threadIconPickerOptions.map((icon) => (
           <label key={icon} className="project-section-icon-picker__tile" title={threadIcons[icon]}>
             <input type="radio" name="thread-icon" value={icon} aria-label={threadIcons[icon]} checked={draft.icon === icon}
               onChange={() => { reset(); setDraft({ ...draft, icon }); }} />

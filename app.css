@@ -673,7 +673,7 @@
   border: 0;
 }
 
-/* Up to 72 tiles: 12 × 6 on desktop, 8 × 9 on phones. */
+/* 72 tiles: 12 × 6 on desktop, 8 × 9 on phones. */
 .project-section-icon-picker__grid {
   display: grid;
   grid-template-columns: repeat(12, 32px);
