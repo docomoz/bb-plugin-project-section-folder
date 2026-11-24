@@ -610,3 +610,226 @@
 [data-project-section-thread-icon] + [data-sidebar-thread-provider] {
   display: none;
 }
+
+.project-section-icon-picker__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgb(0 0 0 / .35);
+}
+
+.project-section-icon-picker {
+  position: fixed;
+  inset: 50% auto auto 50%;
+  z-index: 81;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: max-content;
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100dvh - 2rem);
+  min-height: 0;
+  padding: 12px;
+  overflow: hidden;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--popover);
+  color: var(--popover-foreground);
+  box-shadow: 0 12px 36px rgb(0 0 0 / .2);
+  font-size: 12px;
+}
+
+.project-section-icon-picker h2 {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.project-section-icon-picker__form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+
+/* Kept for screen readers only. */
+.project-section-icon-picker__sr-only,
+.project-section-icon-picker__colors legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.project-section-icon-picker__grid,
+.project-section-icon-picker__colors {
+  min-inline-size: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* 72 icons: 12 × 6 on desktop, 8 × 9 on phones. */
+.project-section-icon-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(12, 32px);
+  gap: 2px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.project-section-icon-picker__tile {
+  position: relative;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.project-section-icon-picker__tile input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.project-section-icon-picker__tile:hover,
+.project-section-icon-picker__tile:has(input:checked) {
+  background: var(--accent);
+}
+
+.project-section-icon-picker__tile:has(input:checked) {
+  border-color: var(--primary);
+}
+
+.project-section-icon-picker__tile:has(input:focus-visible),
+.project-section-icon-picker__footer button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+
+.project-section-icon-picker__tile svg {
+  width: 16px;
+  height: 16px;
+}
+
+.project-section-icon-picker__swatches {
+  display: flex;
+  gap: 4px;
+}
+
+.project-section-icon-picker__swatches .project-section-icon-picker__tile {
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 50%;
+}
+
+/* The label carries the swatch colour, so the ring matches it. */
+.project-section-icon-picker__swatches .project-section-icon-picker__tile:has(input:checked) {
+  background: none;
+  box-shadow: inset 0 0 0 1.5px currentColor;
+}
+
+.project-section-icon-picker__swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+
+.project-section-icon-picker__swatches .project-section-icon-picker__tile:has(input:checked) .project-section-icon-picker__swatch {
+  width: 12px;
+  height: 12px;
+}
+
+.project-section-icon-picker__footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.project-section-icon-picker__footer button {
+  min-height: 26px;
+  padding-inline: 8px;
+  border-radius: 6px;
+}
+
+.project-section-icon-picker__footer button:not(:disabled):hover {
+  background: var(--accent);
+}
+
+.project-section-icon-picker__footer button:disabled {
+  opacity: .45;
+}
+
+.project-section-icon-picker__reset {
+  margin-inline-end: auto;
+  color: var(--muted-foreground);
+}
+
+.project-section-icon-picker__footer .project-section-icon-picker__save {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.project-section-icon-picker__footer .project-section-icon-picker__save:not(:disabled):hover {
+  background: color-mix(in oklab, var(--primary) 88%, var(--popover));
+}
+
+/* Phones: 8 columns across the screen and finger-sized targets. */
+@media (max-width: 480px) {
+  .project-section-icon-picker {
+    width: calc(100vw - 24px);
+    max-width: none;
+    font-size: 13px;
+  }
+
+  .project-section-icon-picker__grid {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+
+  .project-section-icon-picker__grid .project-section-icon-picker__tile {
+    width: auto;
+    height: auto;
+    aspect-ratio: 1;
+  }
+
+  .project-section-icon-picker__grid .project-section-icon-picker__tile svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .project-section-icon-picker__swatches {
+    justify-content: space-between;
+    gap: 0;
+  }
+
+  .project-section-icon-picker__swatches .project-section-icon-picker__tile {
+    width: 28px;
+    height: 28px;
+  }
+
+  .project-section-icon-picker__swatch {
+    width: 18px;
+    height: 18px;
+  }
+
+  .project-section-icon-picker__swatches .project-section-icon-picker__tile:has(input:checked) .project-section-icon-picker__swatch {
+    width: 16px;
+    height: 16px;
+  }
+
+  .project-section-icon-picker__footer button {
+    min-height: 36px;
+    padding-inline: 12px;
+  }
+}

@@ -2,7 +2,7 @@ import { defineRpcContract, type BbPluginApi } from "@get-bb/plugin-sdk";
 import { z } from "zod";
 import { folderIcons } from "./folder-icons";
 import { threadIconContract, threadIconsTag } from "./thread-icon-contract";
-import type { ThreadIcon } from "./thread-icon-options";
+import type { ThreadIcon, ThreadIconStyle } from "./thread-icon-options";
 
 const sectionId = z.string().regex(/^sec_[a-zA-Z0-9_-]+$/);
 const projectId = z.string().regex(/^proj_[a-zA-Z0-9_-]+$/);
@@ -76,13 +76,16 @@ export default function projectSectionFolder(bb: BbPluginApi) {
   const db = bb.storage.database();
   bb.storage.migrate(db, [
     "CREATE TABLE thread_icons (thread_id TEXT PRIMARY KEY, icon TEXT NOT NULL)",
+    "ALTER TABLE thread_icons ADD COLUMN color TEXT",
   ]);
-  const readThreadIcons = db.prepare<[], { thread_id: string; icon: ThreadIcon }>(
-    "SELECT thread_id, icon FROM thread_icons",
+  const readThreadIcons = db.prepare<[], ThreadIconStyle & { thread_id: string }>(
+    "SELECT thread_id, icon, color FROM thread_icons",
   );
-  const saveThreadIcon = db.prepare<[string, ThreadIcon]>(`
-    INSERT INTO thread_icons (thread_id, icon) VALUES (?, ?)
-    ON CONFLICT (thread_id) DO UPDATE SET icon = excluded.icon
+  const saveThreadIcon = db.prepare<ThreadIconStyle & { threadId: string; keepColor: 0 | 1 }>(`
+    INSERT INTO thread_icons (thread_id, icon, color) VALUES (@threadId, @icon, @color)
+    ON CONFLICT (thread_id) DO UPDATE SET
+      icon = excluded.icon,
+      color = CASE WHEN @keepColor THEN thread_icons.color ELSE excluded.color END
   `);
   const deleteThreadIcon = db.prepare<[string]>("DELETE FROM thread_icons WHERE thread_id = ?");
 
@@ -187,12 +190,13 @@ export default function projectSectionFolder(bb: BbPluginApi) {
   bb.rpc.register(rpcContract, {
     getFolder,
     getThreadIcons: () => Object.fromEntries(readThreadIcons.all().map(({ thread_id, icon }) => [thread_id, icon])),
-    setThreadIcon: async ({ threadId, icon }) => {
+    getThreadIconStyles: () => Object.fromEntries(readThreadIcons.all().map(({ thread_id, icon, color }) => [thread_id, { icon, color }])),
+    setThreadIcon: async ({ threadId, icon, color }) => {
       if (icon === null) deleteThreadIcon.run(threadId);
       else {
         const thread = await bb.sdk.threads.get({ threadId });
         if (thread.deletedAt !== null) throw new Error("This thread is no longer available.");
-        saveThreadIcon.run(threadId, icon);
+        saveThreadIcon.run({ threadId, icon, color: color ?? null, keepColor: color === undefined ? 1 : 0 });
       }
       bb.rpc.experimental_invalidate([threadIconsTag]);
       return null;

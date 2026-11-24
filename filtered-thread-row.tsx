@@ -16,12 +16,13 @@ import {
   type PluginProvidersState,
   type PluginSidebarThread,
 } from "@get-bb/plugin-sdk/app";
-import { threadIconGlyph, type ThreadIcon } from "./thread-icon-options";
+import { ThreadIconGlyph } from "./thread-icon-glyph";
+import type { ThreadIconStyle } from "./thread-icon-options";
 
 type Props = {
   thread: PluginSidebarThread;
   provider?: PluginProvidersState["providers"][number];
-  icon?: ThreadIcon;
+  icon?: ThreadIconStyle;
   selected: boolean;
   showMetadata: boolean;
   rowActions: readonly string[];
@@ -69,7 +70,7 @@ export function FilteredThreadRow({ thread, provider, icon, selected, showMetada
         >
           <span className="project-section-filters__title-line">
             {icon ? (
-              <span data-project-section-thread-icon="" aria-hidden="true"><Icon name={threadIconGlyph(icon)} /></span>
+              <span data-project-section-thread-icon="" aria-hidden="true"><ThreadIconGlyph {...icon} /></span>
             ) : provider && (
               <span className="project-section-filters__provider" data-sidebar-thread-provider={provider.id} title={provider.displayName}>
                 <ProviderIcon providerKind="agent" provider={provider} aria-hidden />

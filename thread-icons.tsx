@@ -1,69 +1,23 @@
 import { useLayoutEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import {
-  experimental_Icon as Icon,
-  experimental_THREAD_ACTION_GROUPS,
-  experimental_useRpcMutation,
-  experimental_useRpcQuery,
-  type PluginThreadActionRegistration,
-} from "@get-bb/plugin-sdk/app";
+import { experimental_useRpcQuery } from "@get-bb/plugin-sdk/app";
 import { threadIconContract } from "./thread-icon-contract";
-import { isThreadIcon, threadIconGlyph, threadIcons, type ThreadIcon, type ThreadIcons } from "./thread-icon-options";
+import { ThreadIconGlyph } from "./thread-icon-glyph";
+import type { ThreadIconStyles } from "./thread-icon-options";
 
-const defaultChoice = { id: "default", label: "Provider default", icon: "RotateCcw" };
-const choices = [defaultChoice, ...(Object.keys(threadIcons) as ThreadIcon[]).map((id) => ({
-  id,
-  label: threadIcons[id],
-  icon: threadIconGlyph(id),
-}))];
-const emptyIcons: ThreadIcons = {};
+const emptyIcons: ThreadIconStyles = {};
 const listSelector = '[data-sidebar="content"] [data-bb-plugin="thread-list"]';
 const anchorSelector = "[data-sidebar-thread-shortcut-target][data-sidebar-rename-anchor]";
 
-export function useThreadIcons(): ThreadIcons {
-  return experimental_useRpcQuery({ contract: threadIconContract, method: "getThreadIcons", input: null }).data ?? emptyIcons;
+export function useThreadIconStylesQuery() {
+  return experimental_useRpcQuery({ contract: threadIconContract, method: "getThreadIconStyles", input: null });
 }
 
-function useChangeIconData() {
-  const icons = useThreadIcons();
-  const { mutate } = experimental_useRpcMutation({
-    contract: threadIconContract,
-    method: "setThreadIcon",
-    optimistic({ threadId, icon }, cache) {
-      cache.update("getThreadIcons", null, (current) => {
-        const next = { ...current };
-        if (icon === null) delete next[threadId];
-        else next[threadId] = icon;
-        return next;
-      });
-    },
-  });
-  return { icons, mutate };
+export function useThreadIcons(): ThreadIconStyles {
+  return useThreadIconStylesQuery().data ?? emptyIcons;
 }
 
-export const changeIconAction: PluginThreadActionRegistration<ReturnType<typeof useChangeIconData>> = {
-  id: "change-icon",
-  title: "Change icon",
-  icon: "Palette",
-  group: experimental_THREAD_ACTION_GROUPS.organize,
-  order: 95,
-  useData: useChangeIconData,
-  item: ({ thread, data }) => {
-    const current = data.icons[thread.id];
-    return {
-      label: "Change icon",
-      icon: "Palette",
-      detail: current ? threadIcons[current] : defaultChoice.label,
-      choices: { items: choices.map((choice) => ({ ...choice, selected: choice.id === (current ?? defaultChoice.id) })) },
-      async run({ value }) {
-        if (value === defaultChoice.id) await data.mutate({ threadId: thread.id, icon: null });
-        else if (value && isThreadIcon(value)) await data.mutate({ threadId: thread.id, icon: value });
-      },
-    };
-  },
-};
-
-export function SidebarThreadIcons({ icons }: { icons: ThreadIcons }) {
+export function SidebarThreadIcons({ icons }: { icons: ThreadIconStyles }) {
   const [targets, setTargets] = useState<ReadonlyMap<HTMLElement, HTMLElement>>();
   useLayoutEffect(() => {
     const mounted = new Map<HTMLElement, HTMLElement>();
@@ -120,7 +74,7 @@ export function SidebarThreadIcons({ icons }: { icons: ThreadIcons }) {
 
   return [...targets ?? []].map(([anchor, target], index) => {
     const threadId = anchor.dataset.sidebarThreadId ?? "";
-    const name = icons[threadId];
-    return name ? createPortal(<Icon name={threadIconGlyph(name)} aria-hidden />, target, `${threadId}:${index}`) : null;
+    const style = icons[threadId];
+    return style ? createPortal(<ThreadIconGlyph {...style} />, target, `${threadId}:${index}`) : null;
   });
 }

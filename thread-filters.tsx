@@ -12,7 +12,7 @@ import {
 import { z } from "zod";
 import { FilteredThreadRow } from "./filtered-thread-row";
 import type { FolderKind } from "./server";
-import type { ThreadIcons } from "./thread-icon-options";
+import type { ThreadIconStyles } from "./thread-icon-options";
 
 export type ThreadFilter = "all" | "active" | "waiting" | "unread";
 const options: readonly { value: ThreadFilter; title: string; hint?: string }[] = [
@@ -49,7 +49,7 @@ type Props = {
   filter: ThreadFilter;
   onFilterChange: (filter: ThreadFilter) => void;
   threads: readonly PluginSidebarThread[];
-  threadIcons: ThreadIcons;
+  threadIcons: ThreadIconStyles;
   sections: readonly PluginSidebarSection[];
   projects: readonly PluginSidebarProject[];
   machines: readonly NamedItem[];
