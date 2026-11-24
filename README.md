@@ -1,12 +1,12 @@
 # Sidebar Folders
 
-Group sections, projects, or machines under a collapsible folder in the BB sidebar. Use filters to find active, waiting, or unread threads and give individual threads their own icons.
+Organize sections, projects, or machines in a collapsible folder in the BB sidebar. Find active threads, threads waiting for input, or unread updates. Give each thread one of 72 icons and choose from nine colors or the default gray.
 
 ## Screenshots
 
-| Expanded Projects folder | Folder settings |
-| --- | --- |
-| ![BB sidebar with the thread filters and three sections inside the expanded Projects folder](docs/screenshots/custom-sidebar.png) | ![Projects folder settings with its name, icon choices, and section checkboxes](docs/screenshots/folder-settings.png) |
+| Sidebar folders and filters | Change a thread icon and color | Configure a folder |
+| --- | --- | --- |
+| ![Expanded Projects folder, sidebar filters, and threads with colored icons](docs/screenshots/custom-sidebar.jpg) | ![Change icon picker with an icon grid and color palette](docs/screenshots/change-icon.jpg) | ![Projects folder settings with a name, icon choices, and section checkboxes](docs/screenshots/folder-settings.jpg) |
 
 ## Install
 
