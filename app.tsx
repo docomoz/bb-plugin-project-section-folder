@@ -12,6 +12,7 @@ import {
 import type { FolderKind, ProjectFolder, SectionPlacement, rpcContract } from "./server";
 import { folderIcons, type FolderIcon } from "./folder-icons";
 import { manageFolderLayout } from "./layout";
+import { SidebarLoadMore } from "./sidebar-load-more";
 import { NO_MACHINE, ThreadFilters, threadGroupKey, type ThreadFilter } from "./thread-filters";
 import { changeIconAction, ThreadIconPickerOverlay } from "./thread-icon-picker";
 import { SidebarThreadIcons, useThreadIcons } from "./thread-icons";
@@ -320,6 +321,7 @@ function ProjectSectionFolder() {
 export default definePluginApp((app) => {
   app.slots.experimental_threadAction(changeIconAction);
   app.slots.experimental_appOverlay({ id: "thread-icon-picker", component: ThreadIconPickerOverlay });
+  app.slots.experimental_appOverlay({ id: "sidebar-load-more", component: SidebarLoadMore });
   app.slots.experimental_appOverlay({
     id: "project-section-folder",
     component: ProjectSectionFolder,

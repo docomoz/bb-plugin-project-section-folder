@@ -15,7 +15,6 @@ export const lucideThreadIcons = {
   ShoppingBasket: "Groceries",
   Utensils: "Meals",
   Receipt: "Receipts",
-  PiggyBank: "Savings",
   CreditCard: "Payments",
   House: "Home",
   Wrench: "Maintenance",
@@ -106,15 +105,15 @@ export type ThreadIcon = keyof typeof threadIcons;
 
 // The picker follows common thread topics: one topic per desktop row of 12
 // (work, product and analytics, documents and AI, development and maps, travel and leisure, health and money).
-// 72 icons fill both layouts evenly: 12 × 6 on desktop and 8 × 9 on phones.
-// The registry also accepts previously saved icons.
+// Leave one tile for a saved icon that is outside the picker, so the grid
+// fits in six desktop rows or nine phone rows in either case.
 export const threadIconPickerOptions: readonly ThreadIcon[] = [
   "Flag", "Star", "ListTodo", "UsersRound", "Calendar", "Clock", "Bell", "Mail", "Send", "MessageSquare", "Lightbulb", "Briefcase",
   "News01", "Search", "Radar", "ChartBar", "Funnel", "Database", "Beaker", "Calculator", "Megaphone", "BadgePercent", "Handshake", "Presentation",
   "NotebookPen", "File", "FileCheck", "Mic", "GraduationCap", "BookOpen", "Palette", "Link", "Lock", "Sparkles", "Workflow", "Puzzle",
   "Code", "GitBranch", "Bug", "Rocket", "Server", "Settings", "MapPin", "Route", "Layers3", "Fuel", "SquareParking", "CarFront",
   "Plane", "BedDouble", "House", "Wrench", "ShoppingBasket", "ShoppingBag", "Gift", "HandHeart", "Film", "Ticket", "Music", "Smartphone",
-  "Salad", "Dumbbell", "HeartPulse", "Moon", "Pill", "Stethoscope", "Footprints", "Weight", "GlassWater", "Banknote", "Wallet", "PiggyBank",
+  "Salad", "Dumbbell", "HeartPulse", "Moon", "Pill", "Stethoscope", "Footprints", "Weight", "GlassWater", "Banknote", "Wallet",
 ];
 
 export const threadIconColors = {

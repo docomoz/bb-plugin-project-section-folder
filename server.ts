@@ -1,6 +1,7 @@
 import { defineRpcContract, type BbPluginApi } from "@get-bb/plugin-sdk";
 import { z } from "zod";
 import { folderIcons } from "./folder-icons";
+import { sectionLoadMoreSettings } from "./section-load-more-settings";
 import { threadIconContract, threadIconsTag } from "./thread-icon-contract";
 import type { ThreadIcon, ThreadIconStyle } from "./thread-icon-options";
 
@@ -73,10 +74,12 @@ function kindOf(id: string): FolderKind {
 }
 
 export default function projectSectionFolder(bb: BbPluginApi) {
+  bb.settings.define(sectionLoadMoreSettings);
   const db = bb.storage.database();
   bb.storage.migrate(db, [
     "CREATE TABLE thread_icons (thread_id TEXT PRIMARY KEY, icon TEXT NOT NULL)",
     "ALTER TABLE thread_icons ADD COLUMN color TEXT",
+    "UPDATE thread_icons SET icon = 'Banknote' WHERE icon = 'PiggyBank'",
   ]);
   const readThreadIcons = db.prepare<[], ThreadIconStyle & { thread_id: string }>(
     "SELECT thread_id, icon, color FROM thread_icons",

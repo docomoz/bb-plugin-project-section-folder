@@ -1,6 +1,6 @@
 {
   "name": "bb-plugin-project-section-folder",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "private": true,
   "type": "module",
   "engines": {
@@ -9,7 +9,7 @@
   },
   "bb": {
     "name": "Sidebar Folders",
-    "description": "Organize the BB sidebar with folders, thread filters, and custom thread icons.",
+    "description": "Organize the BB sidebar with folders, thread filters, colored icons, and Load more.",
     "branding": { "icon": "Folder" },
     "server": "./server.ts",
     "app": "./app.tsx"
