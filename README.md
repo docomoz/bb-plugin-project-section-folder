@@ -15,7 +15,7 @@ Requires **BB 0.50.1** or later, **Plugin SDK 0.6.157** or later, and BB's built
 In BB, open **Settings → Plugins → Install from source** and paste:
 
 ```text
-git:https://github.com/docomoz/bb-plugin-project-section-folder.git@v0.2.10
+git:https://github.com/docomoz/bb-plugin-project-section-folder.git@v0.2.11
 ```
 
 You can also pass the same source to `bb plugin install`.
@@ -34,13 +34,13 @@ The folder starts empty. It appears in modes with groups you can put inside it. 
 
 ## Limit long sections
 
-Turn on **Enable Load more** under **Settings → Installed plugins → Sidebar Beautifier**. By default, each custom section and **Threads** shows five top-level threads. **Pinned** has a separate limit of eight that you can turn off. **Load more** reveals five at a time, and **Show less** restores the starting limit. The open thread stays visible, child threads stay with their parent, and each window remembers which sections are expanded until reload.
+Turn on **Enable Load more** under **Settings → Installed plugins → Sidebar Beautifier**. By default, each custom section and **Threads** shows five top-level threads. **Pinned** has a separate limit of eight that you can turn off. **Load more** reveals five at a time, and **Show less** restores the starting limit. A dot beside **Load more** means at least one of the threads still hidden by the limit is unread. The open thread stays visible, child threads stay with their parent, and each window remembers which sections are expanded until reload.
 
 Adjust the initial limits and reveal step in the same settings. If you have the standalone **Section Load More** plugin, copy its limits to Sidebar Beautifier and disable the standalone plugin before enabling **Load more** here.
 
-| Expanded section | Load more settings |
+| Hidden unread threads | Load more settings |
 | --- | --- |
-| ![The expanded Product studio section shows all eight threads and a Show less button](docs/screenshots/load-more.jpg) | ![Load more is enabled with five threads per section, five more per click, and eight pinned threads](docs/screenshots/load-more-settings.jpg) |
+| ![A dot beside Load more signals unread threads below the limit. Show less is a separate button.](docs/screenshots/load-more.jpg) | ![Load more is enabled with five threads per section, five more per click, and eight pinned threads](docs/screenshots/load-more-settings.jpg) |
 
 ## Verify locally
 

@@ -26,6 +26,7 @@ const PINNED_SELECTOR =
   '[data-sidebar-sticky-group][data-sidebar-sticky-header="false"] > div > [data-sidebar-sticky-section]';
 const PINNED_ID = "pinned";
 const ITEM_SELECTOR = "[data-sidebar-windowed-item]";
+const WINDOWED_NAV_ATTR = "data-sidebar-windowed-nav";
 const THREAD_LINK_SELECTOR = "a[data-sidebar-thread-id]";
 
 export interface LoadMoreOptions {
@@ -67,8 +68,16 @@ const CSS = `
   outline: 2px solid var(--sidebar-ring);
   outline-offset: -2px;
 }
+[${FOOTER_ATTR}] .section-load-more-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
 [${FOOTER_ATTR}] .section-load-more-button:not(:hover):not(:focus-visible) {
-  opacity: 0.8;
+  color: color-mix(in srgb, var(--muted-foreground) 80%, transparent);
+}
+.section-load-more-button:not([data-section-load-more-unread]) .section-load-more-unread {
+  display: none;
 }
 `;
 
@@ -105,12 +114,25 @@ function pinnedItems(container: Element): HTMLElement[] {
 
 function itemHasThread(item: Element, threadId: string): boolean {
   if (item.querySelector(`a[data-sidebar-thread-id="${threadId}"]`)) return true;
-  const nav = item.getAttribute("data-sidebar-windowed-nav") ?? "";
+  const nav = item.getAttribute(WINDOWED_NAV_ATTR) ?? "";
   return nav.split(" ").some((entry) => entry.startsWith(`${threadId}:`));
+}
+
+function itemHasUnreadThread(item: Element, unreadThreadIds: ReadonlySet<string>): boolean {
+  for (const link of item.querySelectorAll<HTMLAnchorElement>(THREAD_LINK_SELECTOR)) {
+    if (unreadThreadIds.has(link.dataset.sidebarThreadId ?? "")) return true;
+  }
+  // Windowed rows and their visible children may have IDs but no rendered links.
+  return [item, ...item.querySelectorAll(`[${WINDOWED_NAV_ATTR}]`)].some((row) =>
+    row.getAttribute(WINDOWED_NAV_ATTR)?.split(" ").some((entry) =>
+      unreadThreadIds.has(entry.split(":", 1)[0]),
+    ),
+  );
 }
 
 export class SectionLoadMore {
   private readonly shown = new Map<string, number>();
+  private unreadThreadIds: ReadonlySet<string> = new Set();
   private root: Element | null = null;
   private observer: MutationObserver | null = null;
   private frame = 0;
@@ -147,6 +169,11 @@ export class SectionLoadMore {
     this.schedule();
   }
 
+  updateUnreadThreads(unreadThreadIds: ReadonlySet<string>): void {
+    this.unreadThreadIds = unreadThreadIds;
+    this.schedule();
+  }
+
   stop(): void {
     const view = this.doc.defaultView ?? window;
     view.clearInterval(this.poll);
@@ -171,7 +198,9 @@ export class SectionLoadMore {
       this.observer?.disconnect();
       this.root = root;
       if (root) {
-        this.observer?.observe(root, { childList: true, subtree: true });
+        this.observer?.observe(root, {
+          childList: true, subtree: true, attributes: true, attributeFilter: [WINDOWED_NAV_ATTR],
+        });
       }
       this.schedule();
     }
@@ -238,12 +267,16 @@ export class SectionLoadMore {
     const { step } = this.options;
     const limit = Math.max(visible, this.shown.get(id) ?? visible);
     let hidden = 0;
+    let hasHiddenUnread = false;
     let nextLimit = limit;
     items.forEach((item, index) => {
       const hide =
         index >= limit && !(activeId !== null && itemHasThread(item, activeId));
       if (hide) {
         hidden += 1;
+        if (!hasHiddenUnread && this.unreadThreadIds.size > 0) {
+          hasHiddenUnread = itemHasUnreadThread(item, this.unreadThreadIds);
+        }
         // The active thread can already be visible past the current limit.
         if (hidden <= step) nextLimit = index + 1;
       }
@@ -265,7 +298,7 @@ export class SectionLoadMore {
       footer.setAttribute(FOOTER_ATTR, id);
     }
     if (container.lastElementChild !== footer) container.appendChild(footer);
-    this.renderFooter(footer, id, items, hidden, Math.min(step, hidden), nextLimit, limit > visible);
+    this.renderFooter(footer, id, items, hidden, Math.min(step, hidden), nextLimit, limit > visible, hasHiddenUnread);
   }
 
   private renderFooter(
@@ -276,6 +309,7 @@ export class SectionLoadMore {
     revealCount: number,
     nextLimit: number,
     expanded: boolean,
+    hasHiddenUnread: boolean,
   ): void {
     const signature = `${hidden}|${revealCount}|${nextLimit}|${expanded}`;
     // Align the labels with the thread titles above them.
@@ -285,28 +319,35 @@ export class SectionLoadMore {
         title.getBoundingClientRect().left - footer.getBoundingClientRect().left;
       if (inset > 0) footer.style.paddingLeft = `${Math.round(inset) - 6}px`;
     }
-    if (footer.dataset.signature === signature) return;
-    footer.dataset.signature = signature;
-    footer.replaceChildren();
-    if (hidden > 0) {
-      const loadMore = this.button(
-        `Load more (${hidden})`,
-        `Show ${revealCount} more threads`,
-        () => {
+    // Read status can change while someone has the button focused.
+    if (footer.dataset.signature !== signature) {
+      footer.dataset.signature = signature;
+      footer.replaceChildren();
+      if (hidden > 0) {
+        const loadMore = this.button(`Load more (${hidden})`, `Show ${revealCount} more threads`, () => {
           this.shown.set(id, nextLimit);
           this.apply();
-        },
-      );
-      loadMore.className = "section-load-more-button";
-      footer.appendChild(loadMore);
+        });
+        loadMore.className = "section-load-more-button";
+        const dot = this.doc.createElement("span");
+        dot.className = "section-load-more-unread size-[5px] shrink-0 rounded-full bg-muted-foreground/60 max-md:pointer-coarse:size-1.5";
+        dot.setAttribute("aria-hidden", "true");
+        loadMore.appendChild(dot);
+        footer.appendChild(loadMore);
+      }
+      if (expanded) {
+        footer.appendChild(
+          this.button("Show less", "Show fewer threads", () => {
+            this.shown.delete(id);
+            this.apply();
+          }),
+        );
+      }
     }
-    if (expanded) {
-      footer.appendChild(
-        this.button("Show less", "Show fewer threads", () => {
-          this.shown.delete(id);
-          this.apply();
-        }),
-      );
+    const loadMore = footer.querySelector<HTMLButtonElement>(".section-load-more-button");
+    if (loadMore) {
+      loadMore.toggleAttribute("data-section-load-more-unread", hasHiddenUnread);
+      loadMore.title = `Show ${revealCount} more threads${hasHiddenUnread ? ". Some hidden threads are unread." : ""}`;
     }
   }
 
