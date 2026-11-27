@@ -15,7 +15,7 @@ Requires **BB 0.50.1** or later, **Plugin SDK 0.6.157** or later, and BB's built
 In BB, open **Settings → Plugins → Install from source** and paste:
 
 ```text
-git:https://github.com/docomoz/bb-plugin-project-section-folder.git@v0.2.12
+git:https://github.com/docomoz/bb-plugin-project-section-folder.git@v0.2.13
 ```
 
 You can also pass the same source to `bb plugin install`.

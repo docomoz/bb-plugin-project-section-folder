@@ -407,7 +407,6 @@
 
 .project-section-filters__controls button[aria-pressed="true"] {
   color: var(--sidebar-foreground);
-  font-weight: 600;
 }
 
 .project-section-filters__controls button[aria-pressed="true"]::after {
