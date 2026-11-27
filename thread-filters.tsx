@@ -119,19 +119,22 @@ export function ThreadFilters({ filter, onFilterChange, threads, threadIcons, se
   return (
     <div className="project-section-filters">
       <div className="project-section-filters__controls" role="group" aria-label="Thread filters">
-        {options.map(({ value, title, hint }) => (
-          <button
-            key={value}
-            type="button"
-            data-thread-filter={value}
-            title={hint}
-            aria-pressed={filter === value}
-            onClick={() => onFilterChange(value)}
-          >
-            {title}
-            {value !== "all" && <span className="project-section-filters__count">{matches[value].length}</span>}
-          </button>
-        ))}
+        {options.map(({ value, title, hint }) => {
+          const count = value === "all" ? 0 : matches[value].length;
+          return (
+            <button
+              key={value}
+              type="button"
+              data-thread-filter={value}
+              title={hint}
+              aria-pressed={filter === value}
+              onClick={() => onFilterChange(value)}
+            >
+              {title}
+              {count > 0 && <span className="project-section-filters__count">{count}</span>}
+            </button>
+          );
+        })}
       </div>
       {filter !== "all" && createPortal(
         <div className="project-section-filters__results" data-filter-results={filter}>

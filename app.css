@@ -363,6 +363,7 @@
   min-width: 0;
   padding: 4px 8px 8px;
   color: var(--sidebar-foreground);
+  container: project-section-filters / inline-size;
 }
 
 [data-project-section-new-thread] {
@@ -381,32 +382,56 @@
 }
 
 .project-section-filters__controls {
+  --filter-tab-inset: 6px;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 2px;
-  padding: 3px;
-  border: 1px solid var(--sidebar-border);
-  border-radius: 7px;
+  gap: 4px;
 }
 
 .project-section-filters__controls button {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex: 1 0 auto;
-  gap: 3px;
-  min-height: 24px;
-  padding-inline: 4px;
-  border-radius: 4px;
-  font-size: 11px;
+  flex: none;
+  gap: 4px;
+  min-height: 28px;
+  padding-inline: var(--filter-tab-inset);
+  border-radius: 6px;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-weight: 500;
   white-space: nowrap;
 }
 
-.project-section-filters__controls button[aria-pressed="true"],
-.project-section-filters__controls button:hover {
-  background: var(--sidebar-accent);
-  color: var(--sidebar-accent-foreground);
+.project-section-filters__controls button[aria-pressed="true"] {
+  color: var(--sidebar-foreground);
+  font-weight: 600;
+}
+
+.project-section-filters__controls button[aria-pressed="true"]::after {
+  content: "";
+  position: absolute;
+  inset-inline: var(--filter-tab-inset);
+  bottom: 0;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+}
+
+@container project-section-filters (max-width: 200px) {
+  .project-section-filters__controls {
+    --filter-tab-inset: 4px;
+    gap: 2px;
+  }
+}
+
+@media (hover: hover) {
+  .project-section-filters__controls button:hover {
+    background: var(--sidebar-accent);
+    color: var(--sidebar-accent-foreground);
+  }
 }
 
 .project-section-filters__controls button:focus-visible,
